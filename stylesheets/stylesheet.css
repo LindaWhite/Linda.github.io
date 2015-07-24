@@ -456,7 +456,7 @@ h1.title {
 }
 
 .wrapper {
-  width: 675px;
+  width: 80%;
   margin: 0 auto;
 }
 
@@ -489,7 +489,11 @@ p.tagline {
 .download-bar .inner {
   overflow: hidden;
 }
-
+.inner ul li{
+  display:inline-block;
+  list-style-type:none;
+  margin:0 10px;
+}
 .download-bar .watch-fork iframe {
   display: block;
   float: left;
