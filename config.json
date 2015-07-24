@@ -6,7 +6,7 @@
     "authorName": "Linda",
     "domain": "blog.linda.net",
     "sourcePath": "./source",
-    "distPath": "./dist",
+    "distPath": "http://lindawhite.github.io/dist",
     "blogPath": "./source/blogs",
     "globalPath": "./source/global",
     "disabledPagePlugins": [
