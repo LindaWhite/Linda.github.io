@@ -570,6 +570,7 @@ p.tagline {
   position: fixed;
   bottom: 0;
   right: 0;
+  z-index:5;
   background: #222;
   border: 5px solid #444;
   color: #fff;
