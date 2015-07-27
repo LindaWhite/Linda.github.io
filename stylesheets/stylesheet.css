@@ -625,7 +625,7 @@ footer .creds small {
 
 footer .owner .avatar {
   display: inline-block;
-  width: 60px;
+  width: 40px;
   vertical-align:middle;
 }
 
@@ -731,7 +731,7 @@ footer .owner p a {
 .markdown-body li p,
 .markdown-body dd,
 .markdown-body dd p {
-  margin-bottom: 10px;
+  margin:0 10px;
 }
 
 .markdown-body li pre,
