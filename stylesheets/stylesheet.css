@@ -902,7 +902,7 @@ footer .owner p a {
   max-width: 100%;
   box-sizing: border-box;
 }
-.ds-thread{width:80%;margin:0 auto;}
+.ds-thread{margin:0 auto;}
 
 .highlight  { background: #ffffff; }
 .highlight .c { color: #999988; font-style: italic } /* Comment */
