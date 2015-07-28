@@ -704,12 +704,10 @@ footer .owner p a {
 
 .markdown-body pre.lines {
   font-size: 12px;
-  margin:0 10px 0 -20px;
-  padding: 10px;
+  margin:0 5px 0 0;
   float:  left;
   display: block;
   text-align: right;
-  box-shadow: none;
   background-color:#2a2a2a;
   color: #d6d6d6;
 }
@@ -823,5 +821,5 @@ footer .owner p a {
 }
 .ds-thread{margin:0 auto;}
 .inner a.selected{font-weight:bold;font-size:16px;}
-.abstract{width:96%;margin:10px auto;border:1px solid #ECA2C3;border-radius:5px;}
+.abstract{border-bottom: 1px solid #DCDCDC;}
 .abstract h3 a{color:#000;font-size:20px;}
