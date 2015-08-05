@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="../stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="../stylesheets/github-dark.css">
+  <link rel="stylesheet" href="../javascripts/prettify/prettify.css">
+  <script src="../javascripts/prettify/prettify.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="../javascripts/script.js"></script>
+
+  <title>Mobile Optimization</title>
+  <meta name="description" content="angulardirtychecking">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">LindaWhite</h1>
+    </header>
+    <div id="container">
+      <p class="tagline"></p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <ul>
+            <li><a href="/article">Web前端技术</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+        
+        <h3>移动端页面优化</h3>
+        <h5>2015-08-04</h5>
+        <p>移动端页面相较PC端，显著特点就是网络环境复杂，性能问题更明显。具体表现就是，网速不稳定，流量珍贵，这意味着每下载一个文件或图片的代价更高昂。另外由于性能问题更明显，很小的操作都容易引起卡顿。针对这些特点，需要做优化。</p>
+        <h4>综述</h4>
+        <p>1.PC端的加载优化手段在Moblie侧也适用。<br/>
+        2.首屏3秒渲染，如果达不到，使用Loading页面，<br/>
+        3.联通3G网络平均338KB/s(2.71Mb/s)，所以首屏资源不应超过1014KB<br/>
+        4.Mobile侧因手机配置原因，除加载外渲染速度也是优化重点，要合理处理代码减少渲染损耗<br/>
+        5.影响首屏加载和渲染的代码应在处理逻辑中后置<br/>
+        6.加载完成后用户交互使用时也需注意性能</p>
+        <h4>加载优化</h4>
+        <p>加载过程是较为耗时的过程，可能会占到总耗时的80%时间，因此是优化的重点之一</p>
+        <h5>减少HTTP请求</h5>
+        <p>因为手机浏览器同时响应请求为4个请求（Android支持4个，iOS 5后可支持6个），所以要尽量减少页面的请求数，首次加载同时请求数不能超过4个</p>
+        <p>a.合并CSS、JavaScript<br/>
+        b.合并小图片，使用雪碧图</p>
+        <h5>使用缓存</h5>
+        <p>使用缓存可以减少向服务器的请求数，节省加载时间，所以所有静态资源都要在服务器端设置缓存，并且尽量使用长Cache（长Cache资源的更新可使用时间戳）</p>
+        <p>a.缓存一切可缓存的资源<br/>
+        b.使用长Cache（使用时间戳更新Cache）<br/>
+        c.使用外联式引用CSS、JavaScript</p>
+        <h5>压缩HTML、CSS、JavaScript</h5>
+        <p>减少资源大小可以加快网页显示速度，所以要对HTML、CSS、JavaScript等进行代码压缩，并在服务器端设置GZip</p>
+        <p>a.压缩（例如，多余的空格、换行符和缩进,线上使用无注释版CSS、JS）<br/>
+        b.启用GZip</p>
+        <h5>无阻塞</h5>
+        <p>写在HTML头部的JavaScript（无异步），和写在HTML标签中的Style会阻塞页面的渲染，因此CSS放在页面头部并使用Link方式引入，避免在HTML标签中写Style，JavaScript放在页面尾</p>
+        <h5>按需加载</h5>
+        <p>将不影响首屏的资源和当前屏幕资源不用的资源放到用户需要时才加载，可以大大提升重要资源的显示速度和降低总体流量。但按需加载会导致大量重绘，影响渲染性能</p>
+        <p>a.LazyLoad<br/>
+        b.滚屏加载<br/>
+        c.通过Media Query加载</p>
+        <h5>预加载</h5>
+        <p>大型重资源页面（如游戏）可使用增加Loading的方法，资源加载完成后再显示页面。但Loading时间过长，会造成用户流失.对用户行为分析，可以在当前页加载下一页资源，提升速度</p>
+        <h5>无阻塞</h5>
+        <p>写在HTML头部的JavaScript（无异步），和写在HTML标签中的Style会阻塞页面的渲染，因此CSS放在页面头部并使用Link方式引入，避免在HTML标签中写Style，JavaScript放在页面尾</p>
+        <h5>压缩图片</h5>
+        <p图片是最占流量的资源，因此尽量避免使用他，使用时选择最合适的格式（实现需求的前提下，以大小判断），合适的大小，然后使用软件压缩，同时在代码中用Srcset来按需显示。但过度压缩图片大小影响图片显示效果</p>
+        <p>a.使用其它方式代替图片(1. 使用CSS3 2. 使用SVG 3. 使用IconFont)<br/>
+        b.使用Srcset<br/>
+        c.选择合适的图片(1. webP优于JPG 2. PNG8优于GIF)<br/>
+        d.选择合适的大小（1. 首屏加载不大于1014KB 2. 不宽于640（基于手机屏幕一般宽度））</p>
+        <h5>减少Cookie</h5>
+        <p>Cookie会影响加载速度，所以静态资源域名不使用Cookie</p>
+        <h5>避免重定向</h5>
+        <p>重定向会影响加载速度，所以在服务器正确设置避免重定向</p>
+        <h5>异步加载第三方资源</h5>
+        <p>第三方资源不可控会影响页面的加载和显示，因此要异步加载第三方资源</p>
+        <h4>执行优化</h4>
+        <h5>脚本处理不当会阻塞页面加载、渲染，JavaScript放在尾部或异步</h5>
+        <h5>避免iframe和img的空src</h5>
+        <h5>避免重设图片大小，重设图片大小会导致重绘</h5>
+        <h4>CSS优化</h4>
+        <h5>尽量避免写在HTML标签中写Style属性</h5>
+        <h5>避免CSS表达式，CSS表达式的执行需跳出CSS树的渲染</h5>
+        <h5>移除空的CSS规则</h5>
+        <p>空的CSS规则增加了CSS文件的大小，且影响CSS树的执行，所以需移除空的CSS规则</p>
+        <h5>正确使用Display的属性</h5>
+        <p>Display属性会影响页面的渲染</p>
+        <p>a.display:inline后不应该再使用width、height、margin、padding以及float<br/>
+        b.display:inline-block后不应该再使用float<br/>
+        c.display:block后不应该再使用vertical-align<br/>
+        d.display:table-*后不应该再使用margin或者float</p>
+        <h5>不滥用Float</h5>
+        <p>Float在渲染时计算量比较大，尽量减少使用</p>
+        <h5>标准化各种浏览器前缀</h5>
+        <p>a.无前缀应放在最后<br/>
+        b.CSS动画只用 （-webkit- 无前缀）两种即可<br/>
+        c.其它前缀为 -webkit- -moz- -ms- 无前缀 四种</p>
+        <h4>Javascript执行优化</h4>
+        <h5>减少重绘和回流</h5>
+        <p>a.避免不必要的Dom操作<br/>
+        b.尽量改变Class而不是Style，使用classList代替className<br/>
+        c.避免使用document.write</p>
+        <h5>缓存Dom选择与计算</h5>
+        <p>缓存多次用到的Dom选择与计算，及缓存列表的length</p>
+        <h5>尽量使用事件代理，避免批量绑定事件</h5>
+        <h5>TOUCH事件优化</h5>
+        <p>使用touchstart、touchend代替click，因速度快。但应注意Touch响应过快，易引发误操作</p>
+        <h4>渲染优化</h4>
+        <h5>HTML使用Viewport</h5>
+        <p>Viewport可以加速页面的渲染，请使用&lt;meta name=”viewport” content=”width=device-width, initial-scale=1″&gt;</p>
+        <h5>减少Dom节点</h5>
+        <p>Dom节点太多影响页面的渲染，应尽量减少Dom节点</p>
+        <h5>动画优化</h5>
+        <p>a.尽量使用CSS3动画<br/>
+        b.合理使用requestAnimationFrame动画代替setTimeout<br/>
+        c.适当使用Canvas动画 5个元素以内使用css动画，5个以上使用Canvas动画（iOS8可使用webGL）</p>
+        <h5>高频事件优化</h5>
+        <p>Touchmove、Scroll 事件可导致多次渲染</p>
+        <p>a.使用requestAnimationFrame监听帧变化，使得在正确的时间进行渲染<br/>
+        b.增加响应变化的时间间隔，减少重绘次数</p>
+        <h5>GPU加速</h5>
+        <p>CSS中以下属性（CSS3 transitions、CSS3 3D transforms、Opacity、Canvas、WebGL、Video）来触发GPU渲染，需要合理使用,过渡使用会引发手机过耗电增加</p>
+        <p>原文链接：<a href="http://mp.weixin.qq.com/s?__biz=MTEwNTM0ODI0MQ==&mid=211118361&idx=1&sn=6fbd14cd905ffca677aa89d31a343eaa&scene=1&key=0acd51d81cb052bcf9f272ade0ae3c8d40ffdf5bd9dd08d324a165406524c4528e7a4b0e9a37940a2a09b039eaeef4ed&ascene=1&uin=MTgxODU0Njk2Mg%3D%3D&devicetype=Windows+7&version=61020020&pass_ticket=AvNlV1cfV073ETnw4S7Fz4qzY1FzToEvC8r4pGvqvfhNKvqiJJliFHvmpCnhf9Tl">移动端性能优化指南</a></p>
+<h3>标签</h3>
+<p>mobile</p>
+
+<h3>最新评论</h3>
+
+<div class="ds-recent-comments" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+
+<h3>热评文章</h3>
+
+<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<h3>评论</h3>
+<div class="ds-thread" data-thread-key="5" data-title="mobile-optimization" data-url="lindawhite.gq/atricle/mobile-optimizatio"></div>
+</article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+
+        <p>Contact with me:<a class="avatar" href="http://weibo.com/linda586586" target="_blank"><img src="http://www.sinaimg.cn/blog/developer/wiki/32x32.png"></a><a class="avatar" href="http://t.qq.com/linda586" target="_blank"><img src="http://mat1.gtimg.com/app/opent/images/wiki/resource/weiboicon32.png"></a><a class="avatar" href="https://github.com/LindaWhite" target="_blank"><img src="http://cdn-img.easyicon.cn/png/10981/1098194.gif"></a><em>Email:lingshuangke@gmail.com</em></p>
+      </div>
+      <div class="creds">
+        <small>In A Good Way</small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+  </div>
+  
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"lindawhite"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] 
+       || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+  <!-- 多说公共JS代码 end -->
+  
+</body>
+</html>
