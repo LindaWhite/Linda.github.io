@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="../stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="../stylesheets/github-dark.css">
+  <link rel="stylesheet" href="../javascripts/prettify/prettify.css">
+  <script src="../javascripts/prettify/prettify.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="../javascripts/script.js"></script>
+
+  <title>Mobile Optimization</title>
+  <meta name="description" content="angulardirtychecking">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">LindaWhite</h1>
+    </header>
+    <div id="container">
+      <p class="tagline"></p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <ul>
+            <li><a href="/article">Web前端技术</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+        
+        <h3>URL锚点HTML定位</h3>
+        <h5>2015-08-05</h5>
+        <h4>锚点是什么</h4>
+        <p>锚点,使用命名锚可以在文档中设置标记，这些标记通常放在文档的特定主题处或顶部。然后可以创建到这些命名锚记的链接，这些链接可快速将访问者带到指定位置。
+创建到命名锚记的链接的过程分为两步。首先，创建命名锚记，然后创建到该命名锚记的链接。就是在页面上做一个标记，然后可以使用这个标记进行快速定位。</p>
+        <h4>网页使用锚点定位</h4>
+        <p>锚点定位的应用：href="#"返回顶部；文章比较长的时候的标题索引，链接到网页的指定位置。而这些都是通过点击触发的，可能会被理所当然的认为，锚点的触发是通过点击事件。但实践一下不难得出结论，锚点的定位是通过URL的hash的改变触发的。实践的方法也很简单，就是在页面设置一个锚点标记，再用js改变hash，页面会跳转到锚点的位置。location.hash是一个可读可写的字符串，它在改变的时候，会触发页面跳转到锚点。也就是说，页面之所以能定位到锚点所在位置，都是因为URL地址中的锚链的作用，而不是点击行为。最好的证据就是，当重新载入带有锚链的页面时，锚点依然会被定位。了解锚点定位的触发源有助于我们实际应用时候问题的规避等处理。</p>
+        <h4>网页锚点定位的机制</h4>
+        <p>锚点定位的两个重要条件：1.元素可滚动，2.锚点元素在内部。就是说无滚动则无定位。</p>
+        <p>一个例子，</p>
+        <pre>
+          &lt;img src="hot" id="hot"/&gt;
+        </pre>
+        <p>当hash为#hot的时候，就会定位到上面的hot图片，hot图片会顶着浏览器窗口上边缘显示。图片可以定位到浏览器窗口上边缘，是因为其父元素存在滚动条，可以滚动。如果其父元素没有滚动条的情况下，图片不会被定位上去。这里只讨论了最常见的简单的情况。</p>
+        <h4>overflow:hidden时的锚点定位</h4>
+        <p>>overflow:hidden时，滚动仍然存在，只是滚动条不存在。定位的步骤：1.触发锚点定位，2.锚点元素通过scrollTop值改变向上偏移定位，3.锚元素的上边缘和可滚动容器的上边缘对齐。正如上面提到，锚点定位本质就是滚动定位。因此，如果元素在滚动容器的左上角区域及其之外，显然滚不动，自然也没有锚点定位的效果！但是，如果元素在滚动容器的右下方及其之外，滚动条就是用来滚动右下溢出内容的，因此，这类元素可以被锚点定位。</p>
+        <p>可以利用这点，制作一个无js切换轮播的效果：</p>
+        <p>CSS:</p>
+        <pre>
+          .box{width:200px; height:100px; border:1px solid #ddd; overflow:hidden;}
+          .list{width:200px; height:100px; line-height:100px; background:#ddd; font-size:80px; text-align:center;}
+          .link{width:200px; padding-top:10px; text-align:right;}
+          .click{display:inline-block; width:20px; height:20px; line-height:20px; border:1px solid #ccc; background:#f7f7f7; color:#333; font-size:12px; font-weight:bold; text-align:center; text-decoration:none;}
+          .click:hover{background:#eee; color:#345;}
+        </pre>
+        <p>HTML:</p>
+        <pre>
+          &lt;div class="box"&gt;
+          &lt;div class="list" id="one"&gt;1&lt;/div&gt;
+          &lt;div class="list" id="two"&gt;2&lt;/div&gt;
+          &lt;div class="list" id="three"&gt;3&lt;/div&gt;
+          &lt;div class="list" id="four"&gt;4&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="link"&gt;
+          &lt;a class="click" href="#one"&gt;1&lt;/a&gt;
+          &lt;a class="click" href="#two"&gt;2&lt;/a&gt;
+          &lt;a class="click" href="#three"&gt;3&lt;/a&gt;
+          &lt;a class="click" href="#four"&gt;4&lt;/a&gt;
+          &lt;/div&gt;
+        </pre>
+        <p>这个虽然实现了简单的切换，但是过渡效果不好，可以辅助动画来实现平滑过渡：</p>
+        <pre>
+          @keyframes slideupin {
+              0% {transform: translateY(100%); }
+              100% { transform: translateY(0%);}
+          }
+          .list{
+              ... position:absolute;
+              transform: translateY(-100%);
+              transition: transform .35s .05s linear;
+          }
+          .list:target {
+              z-index: 1;    
+              transform: translateY(0%);
+              animation: slideupin .35s .05s linear forwards;
+          }
+        </pre>
+        <p>参考：<a target="_blank" href="http://www.zhangxinxu.com/wordpress/?p=3591">锚点定位</a></p>
+<h3>标签</h3>
+<p>anchor</p>
+
+<h3>最新评论</h3>
+
+<div class="ds-recent-comments" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+
+<h3>热评文章</h3>
+
+<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<h3>评论</h3>
+<div class="ds-thread" data-thread-key="6" data-title="anchor" data-url="lindawhite.gq/atricle/anchor"></div>
+</article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+
+        <p>Contact with me:<a class="avatar" href="http://weibo.com/linda586586" target="_blank"><img src="http://www.sinaimg.cn/blog/developer/wiki/32x32.png"></a><a class="avatar" href="http://t.qq.com/linda586" target="_blank"><img src="http://mat1.gtimg.com/app/opent/images/wiki/resource/weiboicon32.png"></a><a class="avatar" href="https://github.com/LindaWhite" target="_blank"><img src="http://cdn-img.easyicon.cn/png/10981/1098194.gif"></a><em>Email:lingshuangke@gmail.com</em></p>
+      </div>
+      <div class="creds">
+        <small>In A Good Way</small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+  </div>
+  
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"lindawhite"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] 
+       || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+  <!-- 多说公共JS代码 end -->
+  
+</body>
+</html>
