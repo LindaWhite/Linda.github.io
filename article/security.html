@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="../stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="../stylesheets/github-dark.css">
+  <link rel="stylesheet" href="../javascripts/prettify/prettify.css">
+  <script src="../javascripts/prettify/prettify.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="../javascripts/script.js"></script>
+
+  <title>Security of Frontend</title>
+  <meta name="description" content="angulardirtychecking">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">LindaWhite</h1>
+    </header>
+    <div id="container">
+      <p class="tagline"></p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <ul>
+            <li><a href="/article">Web前端技术</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+        
+        <h3>前端安全相关</h3>
+        <h5>2015-08-19</h5>
+        <h4>题记</h4>
+        <p>最近看了《图解HTTP》，挺有意思的一本科普书。比《HTTP权威指南》容易看下去。里面很多可爱的插图，讲HTTP协议的时候服务器和客户端还顺便卖下萌，很好玩。原来日本的服务器和客户端都长那样，哈哈。里面有介绍前端安全的几章，虽然内容不多，但是感觉很实用，故抽出来做下笔记。</p>
+         <div><img src="http://img3.douban.com/lpic/s27283822.jpg" class="w100" alt="图解HTTP"/></div>
+        <h4>HTTP的缺点</h4>
+        <p>HTTP有一些缺点：
+        <br/>1.通信使用明文(不加密)，内容可能会被窃听
+        <br/>2.不验证通信方的身份，所以有可能遭遇伪装
+        <br/>3.无法证明报文的完整性，所以有可能已经造篡改</p>
+        <h5>通信使用明文可能会被窃听</h5>
+        <p>HTTP报文使用明文方式发送。可能被窥视。即使加密处理的通信也可能被窥视，只是无法得知加密报文信息的含义。但加密后的报文还是会被看到。窃听相同段上的通信并不难。可以使用抓包工具，比如用Wireshark进行抓包分析。保护信息的常用方法是对信息进行加密处理。加密的对象可以是加密通信，对应的技术是HTTPS，也可以是加密内容。</p>
+        <h5>不验证通信方的身份可能遭遇伪装</h5>
+        <p>HTTP协议中的请求和响应不会对通信方进行确认。也就是存在服务器是否就是发送请求中URI真正指定的主机，返回的响应是否真的返回到实际提测请求的客户端的问题。任何人都可以发起请求，在协议HTTP通信时，由于不存在确认通信方的处理步骤，任何人都可以发起请求。服务器只要收到QQ，不管对方是谁都返回一个响应(在IP和端口没有被服务器限定的情况下)。所以可能存在是隐患是：
+        <br/>1.无法确定请求发送至目标的Web服务器是否是按真实意图返回响应的那台服务器，可能是已经伪装的Web服务器。
+        <br/>2.无法确定响应返回到的客户是否是按真实意图接收响应的那个客户端，可能是已伪装的客户端。
+        <br/>3.无法确定正在通信的对方是否具备访问权限。因为某些Web服务器上保存着重要的信息，只想发给特定用户。
+        <br/>4.无法判定请求来自哪里。
+        <br/>5.即使是无意义的请求也会照单全收。无法阻止海量请求下的Dos攻击</p>
+        <p>使用SSL可以确定通信方。SSL提供了证书，可以用来确定对方。证书是有可信任的第三方机构颁发，伪造证书是很困难的。通过使用证书，可以证明服务器是意料中的服务器。客户端持有证书可以完成个人身份的确认。</p>
+        <h5>无法证明报文完整性，可能内容已经遭篡改。</h5>
+        <p>接收到的内容可能被篡改，且接收者很难察觉。这种遭遇攻击者拦截并篡改内容的攻击称为中间人攻击。防止篡改的常用方法是MD-5和SHA-1等散列值校验的方法，及用来确认文件的数字签名方法。但是用这些方法也依然无法百分百保证确认结果正确。因为若MD-5本身被改写的话，用户无法意识到。为防止这些弊端，有必要使用HTTPS。SSL提供认证和加密处理及摘要功能。</p>
+        <h4>Web的攻击技术</h4>
+        <h5>针对web的攻击技术</h5>
+        <p>HTTP是一个通用的单纯协议机制。在客户端可以篡改请求，通过URL查询字段或表单、HTTP首部、Cookie等途径把攻击代码传入，若这时Web应用存在安全漏洞，那内部信息就会遭到窃取，或被攻击者拿到管理权限。攻击模式分为主动攻击和被盗攻击。主动攻击如SQL注入、OS命令注入攻击。被动攻击指利用圈套策略执行攻击代码的攻击模式。被动攻击的攻击模式通常如下：
+        <br/>步骤1：攻击者诱使用户触发已设置好的陷阱，而陷阱会启动发送已嵌入攻击代码的HTTP请求。
+        <br/>步骤2：当用户不知不觉中招之后，用户的浏览器或邮件客户端就会触发这个陷阱。
+        <br/>步骤3：中招后的用户浏览器会把含有攻击代码的HTTP请求发送给作为攻击目标的Web应用，运行攻击代码。
+        <br/>步骤4：执行完攻击代码，存在安全漏洞的Web应用会成为攻击者的跳板。可能导致用户所持有的Cookie等个人信息被窃取，登录状态中的用户权限遭恶意滥用等后果。被动攻击模式中具有代表性的攻击是跨站脚本攻击和跨站点请求伪造。</p>
+        <p>输出值转义不完全可能会引发安全漏洞。Web应用安全对策分为客户端验证和服务器端的验证。大多情况采用js在客户端验证数据。但是在客户端允许篡改数据或关闭js,不适合将js验证作为安全的防范对策。服务器端验证至关重要。</p>
+    
+        <p>跨站脚本攻击(XSS)指通过存在安全漏洞的Web网站注册用户的浏览器内运行非法的HTML标签或js进行的一种攻击。动态创建的HTML部分有可能隐藏安全漏洞，这样攻击者写脚本设下陷阱，用户在自己的浏览器上运行时，不小心就会受到被动攻击。跨站脚本攻击可能有的影响：利用虚假输入表单骗取个人信息；利用脚本窃取用户的Cookie值，被害者在不知情的情况下，帮助攻击这发送恶意请求，显示伪造的文章或图片。</p>
+        
+        <p></p>
+        
+        
+<h3>标签</h3>
+<p>security</p>
+
+<h3>最新评论</h3>
+
+<div class="ds-recent-comments" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+
+<h3>热评文章</h3>
+<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<h3>评论</h3>
+<div class="ds-thread" data-thread-key="7" data-title="security" data-url="lindawhite.gq/atricle/security"></div>
+</article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+
+        <p>Contact with me:<a class="avatar" href="http://weibo.com/linda586586" target="_blank"><img src="http://www.sinaimg.cn/blog/developer/wiki/32x32.png"></a><a class="avatar" href="http://t.qq.com/linda586" target="_blank"><img src="http://mat1.gtimg.com/app/opent/images/wiki/resource/weiboicon32.png"></a><a class="avatar" href="https://github.com/LindaWhite" target="_blank"><img src="http://cdn-img.easyicon.cn/png/10981/1098194.gif"></a><em>Email:lingshuangke@gmail.com</em></p>
+      </div>
+      <div class="creds">
+        <small>In A Good Way</small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+  </div>
+  
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"lindawhite"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] 
+       || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+  <!-- 多说公共JS代码 end -->
+  
+</body>
+</html>
